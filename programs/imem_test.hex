@@ -1,0 +1,8 @@
+// imem_test.hex -- a few known 32-bit words for the instr_memory testbench.
+// One 8-hex-digit word per line; $readmemh loads them into mem[0], mem[1], ...
+// (Lines like this one are comments and are ignored by $readmemh.)
+00000093
+00100113
+00200193
+deadbeef
+cafef00d

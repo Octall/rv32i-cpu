@@ -1,0 +1,17 @@
+// cpu_prog.hex -- test program for cpu_top (loaded into instr_memory)
+// word                 assembly              effect
+00500093  // addi x1,  x0, 5            x1 = 5
+00300113  // addi x2,  x0, 3            x2 = 3
+002081b3  // add  x3,  x1, x2           x3 = 8
+40208233  // sub  x4,  x1, x2           x4 = 2
+0020f2b3  // and  x5,  x1, x2           x5 = 1
+0020e333  // or   x6,  x1, x2           x6 = 7
+001123b3  // slt  x7,  x2, x1           x7 = 1  (3 < 5)
+00302023  // sw   x3,  0(x0)            mem[0] = 8
+00002403  // lw   x8,  0(x0)            x8 = 8
+00208463  // beq  x1,  x2, +8           NOT taken (5 != 3)
+02a00493  // addi x9,  x0, 42           x9 = 42
+00000463  // beq  x0,  x0, +8           taken -> skip next
+06300513  // addi x10, x0, 99           SKIPPED
+00700593  // addi x11, x0, 7            x11 = 7
+00000063  // beq  x0,  x0, 0            spin here forever
