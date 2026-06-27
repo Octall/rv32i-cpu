@@ -31,7 +31,7 @@
 
 module instr_memory #(
     parameter int    DEPTH     = 16384,
-    parameter string INIT_FILE = "/home/vr-pc/Documents/mahmoud/riscv-core/tests/build/add.hex"
+    parameter string INIT_FILE = "/home/vr-pc/Documents/mahmoud/riscv-core/programs/prog.hex"
 ) (
     input  logic [31:0] addr,    // byte address (comes from the PC)
     output logic [31:0] instr    // 32-bit instruction stored at that address
@@ -39,7 +39,13 @@ module instr_memory #(
 
     // Loading memory in from file
     logic [31:0] mem [0:DEPTH-1];
-    initial $readmemh(INIT_FILE, mem);
+    initial begin
+`ifdef PROG_HEX
+        $readmemh(`PROG_HEX, mem);                  // board program (Vivado verilog_define)
+`else
+        if (INIT_FILE != "") $readmemh(INIT_FILE, mem);
+`endif
+    end
 
     assign instr = mem[addr[15:2]];   // 16384 words -> 14 index bits
     

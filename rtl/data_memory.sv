@@ -8,7 +8,10 @@
 
 module data_memory #(
     parameter int    DEPTH     = 16384,
-    parameter string INIT_FILE = ""
+    // Harvard unified image: data memory must hold the SAME hex as instr_memory
+    // (the program's .rodata/.data live here). Sims override this via hierarchical
+    // $readmemh; on the board this default (or the PROG_HEX define) loads the BRAM.
+    parameter string INIT_FILE = "/home/vr-pc/Documents/mahmoud/riscv-core/programs/prog.hex"
 ) (
     input  logic        clk,
     input  logic        mem_write,    // 1 = store this cycle
@@ -23,7 +26,11 @@ module data_memory #(
     // optional program-image preload (same hex as instr_memory; "" = skip,
     // so the test runner's own $readmemh keeps working unchanged)
     initial begin
+`ifdef PROG_HEX
+        $readmemh(`PROG_HEX, mem);                  // board program (Vivado verilog_define)
+`else
         if (INIT_FILE != "") $readmemh(INIT_FILE, mem);
+`endif
     end
 
     // synchronous, per-lane write

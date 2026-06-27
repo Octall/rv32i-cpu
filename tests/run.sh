@@ -10,7 +10,7 @@ OBJDUMP=riscv64-unknown-elf-objdump
 
 # compile the runner with the core (exclude the board-only wrappers)
 iverilog -g2012 -o "$RUNNER" \
-    $(ls "$ROOT"/rtl/*.sv | grep -vE 'nexys4_top|clock_divider') \
+    $(ls "$ROOT"/rtl/*.sv | grep -vE 'nexys4_top|board_top|clock_divider') \
     "$ROOT/tb/test_runner.sv"
 
 names=("$@")

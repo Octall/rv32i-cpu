@@ -1,56 +1,71 @@
 # riscv-core
 
-A RISC-V **RV32I** soft core written from scratch in **SystemVerilog**, simulated with
-Icarus Verilog and targeted at a Digilent **Nexys 4** (Xilinx Artix-7) board.
+A RISC-V **RV32I** soft processor written from scratch in **SystemVerilog** — simulated
+with Icarus Verilog, validated against the official `riscv-tests` ISA suite, and **running
+on real silicon** (Digilent Nexys 4, Xilinx Artix-7).
 
-> Built as a learning project: single-cycle first, then refactored to a 5-stage pipeline.
-> Every module ships with a self-checking testbench.
+## Highlights
+
+- ✅ **Full RV32I base ISA** — all R/I/S/B/U/J-type instructions, byte-addressed
+  load/store, `jal`/`jalr`, `lui`/`auipc`, and every branch condition.
+- ✅ **Validated** against the official **`riscv-tests`** `rv32ui` suite.
+- ✅ **Running on hardware** (Artix-7, `xc7a100tcsg324-1`) with UART output to host.
+- ✅ **CoreMark: 17 iter/s @ 12.5 MHz → 1.36 CoreMark/MHz** (single-cycle), CRC-verified.
+- 🚧 **5-stage pipeline** (IF/ID/EX/MEM/WB with hazard detection + forwarding) — in progress.
+
+Every module ships with its own self-checking testbench in `tb/`.
 
 ## Layout
 ```
-rtl/        synthesizable modules (the CPU)
-tb/         self-checking testbenches (the specs)
-programs/   hex test programs (added later)
-Makefile    one-command simulation harness
+rtl/          synthesizable modules (the CPU + MMIO peripherals)
+tb/           self-checking testbenches (the specs)
+programs/     hex test programs
+tests/        riscv-tests harness (build.sh / run.sh)
+bench/        CoreMark port (EEMBC; see attribution below)
+constraints/  Nexys 4 .xdc pin constraints
+build_board.tcl   Vivado project for board bring-up
+Makefile      one-command simulation harness
 ```
 
 ## Prerequisites
 ```bash
 sudo apt update && sudo apt install -y iverilog gtkwave
 ```
-Later phases also need Xilinx **Vivado** (Nexys 4 synthesis) and the
-`gcc-riscv64-unknown-elf` toolchain (compiling C/asm test programs).
+Hardware/benchmark phases also need Xilinx **Vivado** (Nexys 4 synthesis) and the
+`gcc-riscv64-unknown-elf` toolchain (use `-march=rv32i_zicsr_zifencei`).
 
 ## Running a simulation
 ```bash
-make sim  TB=register_file      # compile all rtl + one testbench, then run it
-make wave TB=register_file      # open that run's waveform in GTKWave
+make sim  TB=cpu_top      # compile all rtl + one testbench, then run it
+make wave TB=cpu_top      # open that run's waveform in GTKWave
 make clean
 ```
-`TB` selects which testbench in `tb/` to run (defaults to `register_file`). A passing run
-prints `... : ALL TESTS PASSED`.
+`TB` selects which testbench in `tb/` to run. A passing run prints `... : ALL TESTS PASSED`.
 
-## The development loop
-1. Read the module's testbench in `tb/` — it's the contract.
-2. Write the module in `rtl/`.
-3. `make sim TB=<module>` until it passes.
-4. `make wave TB=<module>` to debug from the waveform when a check fails.
+## Running the riscv-tests suite
+```bash
+bash tests/build.sh       # compile the rv32ui tests to hex images
+bash tests/run.sh         # load each into the core and check the tohost result
+```
 
-## Roadmap — RV32I single-cycle
-Build in order; each gets a module **and** a testbench (copy the `register_file` pattern).
+## Architecture
 
-- [x] `register_file` — 32×32-bit register state *(worked example)*
-- [x] `program_counter` — the PC register
-- [x] `instr_memory` — instruction ROM (`$readmemh`)
-- [x] `imm_gen` — reconstruct I/S/B/U/J immediates
-- [x] `alu` — add/sub/logic/shift/compare ops
-- [x] `control_unit` — decode opcode/funct → control signals
-- [x] `data_memory` — load/store RAM
-- [x] `cpu_top` — wire the datapath together and run real programs ✅ **working core**
+See [`docs/architecture.md`](docs/architecture.md) for the datapath, the memory-mapped I/O
+layout (UART, cycle counter, halt register), and the Harvard memory model used for
+simulation and on-board execution.
 
-## Stretch goals
-- Pass the official `riscv-tests` ISA suite.
-- **Hardware:** Vivado + Nexys 4 constraints; prove it runs on the board; report Fmax and
-  LUT/FF/BRAM utilization.
-- **Pipeline:** refactor to 5-stage (IF/ID/EX/MEM/WB) with hazard detection + forwarding.
-- Reimplement a module in **Hardcaml** (OCaml) as a high-level-HDL exercise.
+## Roadmap
+- [x] Complete RV32I base ISA, single-cycle
+- [x] Pass the official `riscv-tests` `rv32ui` suite
+- [x] Synthesize and run on the Nexys 4 (Artix-7), UART to host
+- [x] CoreMark benchmark on hardware
+- [ ] 5-stage pipeline with hazard detection + forwarding
+- [ ] Reimplement a module in **Hardcaml** (OCaml) as a high-level-HDL exercise
+
+## License
+
+This project's source is released under the [MIT License](LICENSE).
+
+The CoreMark sources under `bench/coremark/` are © EEMBC, distributed under the
+Apache License 2.0 — see the [official CoreMark repository](https://github.com/eembc/coremark)
+for the full license and score-reporting rules.

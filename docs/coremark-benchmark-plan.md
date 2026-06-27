@@ -31,8 +31,22 @@ over the board's USB-UART bridge.
   `cpu_top`; **SoC smoke test green** (`"Hello from RV32I\n"` end-to-end).
 - 🛠 **Linker bug fixed** — `.bss` was unaligned (`0x86`), sharing a word with `.rodata`;
   `crt0`'s word-store zeroing clobbered it. All sections now `ALIGN(4)`; `__bss_start=0x88`.
-- ⬜ **Phase 2 remainder** — vendor CoreMark + `core_portme.c/.h`, build via `cc.sh`.
-- ⬜ **Phase 3/4** — sim CoreMark run → board.
+- ✅ **Phase 2** — CoreMark vendored + RV32I port (`uart_send_char`→UART, `barebones_clock`
+  →cycle counter, no-FPU/no-libc). Builds to 3682 words (14.7 KB), fits 16K — no resize.
+- ✅ **Phase 3 (sim)** — CoreMark **CRC-validated**: crclist/crcmatrix/crcstate all match the
+  reference (`known_id=3`). 1 iter = 746,590 timed ticks → **~1.34 CoreMark/MHz**. (The lone
+  "error" is CoreMark's ≥10 s rule, irrelevant to correctness.)
+- ✅ **Board prep** — `prog.hex` rebuilt with ITERATIONS=300 (~18 s @ 12.5 MHz → valid run);
+  both memory defaults point at `programs/prog.hex`.
+- ⬜ **Phase 4 (board)** — re-synthesize, flash, capture the CoreMark report over UART.
+
+## Hardware bring-up notes (learned the hard way)
+- Harvard unified image must be loaded into **both** BRAMs (`instr_memory` *and*
+  `data_memory` INIT_FILE / `PROG_HEX`). Only imem → "only the first char" symptom.
+- `.bss` must be word-aligned (linker `ALIGN(4)`), else `crt0`'s `sw`-based zeroing clobbers
+  adjacent `.rodata`.
+- Single-cycle core runs at 12.5 MHz on the Nexys 4 (won't meet 100 MHz); UART baud tracks
+  `CLK_HZ`.
 
 ## Memory map (the contract everything shares)
 

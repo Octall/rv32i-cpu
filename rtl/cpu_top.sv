@@ -6,7 +6,9 @@
 // =============================================================================
 
 module cpu_top #(
-    parameter INIT_FILE = ""        // program hex, passed to instr_memory
+    parameter int    CLK_HZ    = 100_000_000    // core clock Hz; sets the UART baud divisor
+    // (board program is loaded into the memories via the PROG_HEX `define, not a param --
+    //  Icarus can't thread string params, and synthesis needs a compile-time path anyway)
 ) (
     input  logic        clk,
     input  logic        rst_n,
@@ -101,7 +103,7 @@ module cpu_top #(
     // serial out: a store to UART_DATA pulses `start` for one cycle (single-cycle core)
     logic uart_busy, uart_we;
     assign uart_we = mem_write & is_mmio & (alu_result == UART_DATA);
-    uart_tx #(.CLK_HZ(100_000_000), .BAUD(115_200)) u_uart (
+    uart_tx #(.CLK_HZ(CLK_HZ), .BAUD(115_200)) u_uart (
         .clk(clk), .rst_n(rst_n),
         .start(uart_we), .data(dmem_wdata[7:0]),
         .tx(uart_tx), .busy(uart_busy) );

@@ -9,10 +9,16 @@
 #define CYCLES    (*(volatile unsigned int *)0x10000008u)  /* R: free-running cycles */
 #define HALT_REG  (*(volatile unsigned int *)0x1000000Cu)  /* W: any store -> halt */
 
-/* Block until the UART can accept a byte, then send it. */
-static inline void uart_putc(char c) {
+/* Block until the UART can accept a byte, then send one raw byte. */
+static inline void uart_putc_raw(char c) {
     while (UART_STAT & 1u) { }
     UART_DATA = (unsigned char)c;
+}
+
+/* Send a char, expanding '\n' to CR+LF so serial terminals don't stair-step. */
+static inline void uart_putc(char c) {
+    if (c == '\n') uart_putc_raw('\r');
+    uart_putc_raw(c);
 }
 
 static inline void uart_puts(const char *s) {

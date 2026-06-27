@@ -1,6 +1,6 @@
 module uart_tx #(
     parameter int CLK_HZ = 100_000_000,
-    parameter int BAUD   = 115_200 
+    parameter int BAUD   = 9_600 
 )(
     input  logic       clk,
     input  logic       rst_n,

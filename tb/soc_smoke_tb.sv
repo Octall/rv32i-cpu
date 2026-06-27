@@ -15,7 +15,7 @@ module soc_smoke_tb;
     // expected output packed into a vector (Icarus string methods are unreliable);
     // char i lives at EXP[(LEN-1-i)*8 +: 8]
     localparam int LEN = 17;
-    localparam logic [LEN*8-1:0] EXP = "Hello from RV32I\n";
+    localparam logic [LEN*8-1:0] EXP = "Hello from RV32I\n";  // CR (0x0d) skipped below
 
     logic        clk = 0, rst_n;
     logic [31:0] debug_pc, debug_result;
@@ -39,13 +39,15 @@ module soc_smoke_tb;
                 repeat (CPB) @(posedge clk);
             end
             $write("%c", b);                        // echo live
-            if (idx < LEN) begin
-                if (b !== EXP[(LEN-1-idx)*8 +: 8]) begin
-                    $display("\nFAIL char %0d: got %02x exp %02x", idx, b, EXP[(LEN-1-idx)*8 +: 8]);
-                    errors++;
-                end
-            end else errors++;                      // unexpected extra byte
-            idx++;
+            if (b != 8'h0d) begin                   // skip CR (display-only, not message content)
+                if (idx < LEN) begin
+                    if (b !== EXP[(LEN-1-idx)*8 +: 8]) begin
+                        $display("\nFAIL char %0d: got %02x exp %02x", idx, b, EXP[(LEN-1-idx)*8 +: 8]);
+                        errors++;
+                    end
+                end else errors++;                  // unexpected extra byte
+                idx++;
+            end
         end
     end
 
