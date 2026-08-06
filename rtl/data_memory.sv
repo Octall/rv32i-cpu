@@ -3,7 +3,7 @@
 // =============================================================================
 // Combinational word read; synchronous write where each byte lane is written
 // only if its byte_en bit is set (and mem_write). byte_en + the aligned
-// write_data come from store_align. (See docs/rv32i-completion-spec.md §1.5.)
+// write_data come from store_align.
 // =============================================================================
 
 module data_memory #(
@@ -11,7 +11,7 @@ module data_memory #(
     // Harvard unified image: data memory must hold the SAME hex as instr_memory
     // (the program's .rodata/.data live here). Sims override this via hierarchical
     // $readmemh; on the board this default (or the PROG_HEX define) loads the BRAM.
-    parameter string INIT_FILE = "/home/vr-pc/Documents/mahmoud/riscv-core/programs/prog.hex"
+    parameter string INIT_FILE = "programs/prog.hex"
 ) (
     input  logic        clk,
     input  logic        mem_write,    // 1 = store this cycle

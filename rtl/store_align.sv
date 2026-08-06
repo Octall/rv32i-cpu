@@ -4,7 +4,6 @@
 // Given the store width (funct3) and the low address bits, produce:
 //   wdata   - rs2_data replicated across lanes so the right bytes sit in place
 //   byte_en - which of the 4 byte lanes data_memory should actually write
-// (See docs/rv32i-completion-spec.md §1.5.)
 // =============================================================================
 
 module store_align (

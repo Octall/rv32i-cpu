@@ -3,7 +3,6 @@
 // =============================================================================
 // data_memory returns the full 32-bit word; this picks the addressed byte/half
 // and extends it to 32 bits per the load width (funct3).
-// (See docs/rv32i-completion-spec.md §1.5.)
 // =============================================================================
 
 module load_extend (

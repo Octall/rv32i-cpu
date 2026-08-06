@@ -31,7 +31,7 @@
 
 module instr_memory #(
     parameter int    DEPTH     = 16384,
-    parameter string INIT_FILE = "/home/vr-pc/Documents/mahmoud/riscv-core/programs/prog.hex"
+    parameter string INIT_FILE = "programs/prog.hex"
 ) (
     input  logic [31:0] addr,    // byte address (comes from the PC)
     output logic [31:0] instr    // 32-bit instruction stored at that address

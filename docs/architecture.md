@@ -4,10 +4,10 @@ A from-scratch **single-cycle RV32I** soft processor in SystemVerilog, wrapped i
 SoC (CPU + Harvard memories + memory-mapped peripherals) targeting a Digilent **Nexys 4**
 (Xilinx Artix-7 XC7A100T). Simulated with Icarus Verilog; synthesized with Vivado.
 
-> Snapshot: reflects the design after the SoC bus + peripherals were added (Phase 0/1 of the
-> CoreMark effort — see `coremark-benchmark-plan.md`). Verified: `rv32ui` 40/41 pass
-> (`ma_data` expected-fail, needs misalignment traps), all unit testbenches, and the
-> end-to-end `soc_smoke` test.
+> Snapshot: reflects the design after the SoC bus and MMIO peripherals (UART, cycle counter,
+> halt register) were added for the CoreMark run. Verified: `rv32ui` 40/41 pass (`ma_data`
+> expected-fail, needs misalignment traps), all unit testbenches, and the end-to-end
+> `soc_smoke` test.
 
 ---
 

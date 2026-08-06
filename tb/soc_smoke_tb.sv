@@ -11,7 +11,7 @@
 
 module soc_smoke_tb;
     localparam int CPB = 100_000_000 / 115_200;     // clocks per UART bit (868)
-    localparam string IMG = "/home/vr-pc/Documents/mahmoud/riscv-core/programs/hello.hex";
+    localparam string IMG = "programs/hello.hex";
     // expected output packed into a vector (Icarus string methods are unreliable);
     // char i lives at EXP[(LEN-1-i)*8 +: 8]
     localparam int LEN = 17;

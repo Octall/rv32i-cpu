@@ -17,7 +17,7 @@
 
 module coremark_tb;
     localparam int CPB = 100_000_000 / 115_200;     // UART clocks per bit at sim's 100 MHz
-    localparam string IMG = "/home/vr-pc/Documents/mahmoud/riscv-core/programs/coremark.hex";
+    localparam string IMG = "programs/coremark.hex";
 
     logic        clk = 0, rst_n;
     logic [31:0] debug_pc, debug_result;
